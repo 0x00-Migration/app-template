@@ -1,0 +1,15 @@
+{
+  "lockfileVersion": 2,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "my-app",
+      "devDependencies": {
+        "@acde/api": "https://pkgs.dopame.ai/acdev/0.1.3/acde-api-0.1.3.tar.gz",
+      },
+    },
+  },
+  "packages": {
+    "@acde/api": ["@acde/api@https://pkgs.dopame.ai/acdev/0.1.3/acde-api-0.1.3.tar.gz", {}, "sha512-qTk5DgSK9nDsJubIn2r59bMns4h4Ip020hq9qBWA1v0hp15NrGZ1/Th8E1BS8+k1tvuAlJb0L+wZGk+NfOLIKQ=="],
+  }
+}

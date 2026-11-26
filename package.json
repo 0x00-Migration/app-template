@@ -1,0 +1,14 @@
+{
+  "name": "my-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "acdev dev",
+    "build": "acdev build",
+    "check": "acdev check"
+  },
+  "devDependencies": {
+    "@acde/api": "https://pkgs.dopame.ai/acdev/0.1.3/acde-api-0.1.3.tar.gz"
+  },
+  "packageManager": "bun@1.4.5"
+}

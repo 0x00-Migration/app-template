@@ -1,0 +1,27 @@
+{
+  "$schema": "./acde.config.schema.json",
+  // A window app: a plain web page (index.html), with an optional backend in server.ts. System features come from
+  // acde:* modules (import { fs } from 'acde:fs'), granted by capabilities. For editor types write
+  // /// <reference types="@acde/api/app" /> (the app modules; shell modules are only for desktops and their own apps).
+  "type": "app",
+  "id": "my-app",
+  "label": "My App",
+  // icon: a freedesktop icon name (application-x-executable, accessories-calculator …) or an .svg / .png in the project (like "icon.svg"),
+  // copied into the package at build time.
+  "icon": "application-x-executable",
+  "entry": "index.html",
+  // capabilities: the system features the app uses. "fs": true gives the app's private folder and the folders the user
+  // picks for it; name public places in fs.roots, and declaring one is what gives the app access to it:
+  // "fs": { "roots": ["documents"] }
+  // (desktop, documents, downloads, music, pictures, videos).
+  "capabilities": {},
+  // optional: capabilities the app can run without; they are not imported statically but taken with
+  // await import('acde:<name>'), which rejects where the platform lacks them.
+  "optional": [],
+  // services: desktop services the app uses (import 'acde:<name>'); not the name of a system module.
+  "services": [],
+  // requests: the private requests the app accepts (another app calls open('my-app', { kind: '<name>' }));
+  // schemes: the URL schemes whose links it opens (lower case, without the colon).
+  "requests": [],
+  "schemes": []
+}

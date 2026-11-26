@@ -1,0 +1,614 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "http://gitea.dopamine/AC/acdev/npm/templates/config.schema.json",
+  "title": "acde.config.jsonc",
+  "description": "An acde project's configuration: a window app (type app) or a desktop (type desktop); acdev build turns it into the package's package.json manifest",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "description": "The package name; defaults to package.json's name"
+        },
+        "version": {
+          "type": "string"
+        },
+        "apiLevel": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The contract level (API_LEVEL); when left out, acdev build writes the current level"
+        },
+        "public": {
+          "type": "string",
+          "description": "The directory of static files copied as they are; defaults to public"
+        },
+        "type": {
+          "const": "app"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "label": {
+          "type": "string"
+        },
+        "icon": {
+          "$ref": "#/$defs/icon"
+        },
+        "entry": {
+          "type": "string",
+          "description": "An HTML page (default index.html) or a module whose default export is a WindowApp; \"/\" means the backend renders the page (needs a backend); not used when a framework is recognized"
+        },
+        "framework": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "none",
+            "next",
+            "nuxt",
+            "sveltekit",
+            "astro",
+            "react-router",
+            "remix",
+            "angular",
+            "vite",
+            "cra",
+            "script"
+          ],
+          "description": "How to build: auto (default) recognizes the framework from the dependencies (Next.js, Nuxt, SvelteKit, Astro, React Router, Remix, Angular, Vite, Create React App, or package.json's build script) and uses its own build; none uses acdev's bundler (Bun.build, the entry is HTML or a module)"
+        },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "fs": {
+              "oneOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "roots": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "roots"
+                  ]
+                }
+              ]
+            },
+            "terminal": {
+              "type": "boolean"
+            },
+            "office": {
+              "type": "boolean"
+            },
+            "launch": {
+              "type": "boolean"
+            },
+            "slots": {
+              "type": "boolean"
+            },
+            "open": {
+              "oneOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            },
+            "openFiles": {
+              "type": "boolean"
+            },
+            "session": {
+              "type": "boolean",
+              "description": "acde:session (sign out, language …; a shell module, for system apps only)"
+            },
+            "desktops": {
+              "type": "boolean",
+              "description": "acde:desktops (list / switch desktops; a shell module, for system apps only)"
+            },
+            "windows": {
+              "type": "boolean",
+              "description": "acde:windows (every window: list, focus, hide, animate; a shell module, for system apps only)"
+            },
+            "packages": {
+              "type": "boolean",
+              "description": "acde:packages (refresh and install packages, list and run native programs; a shell module, for system apps only)"
+            },
+            "inspect": {
+              "type": "boolean",
+              "description": "acde:inspect (see and operate the desktop; a shell module, for system apps only)"
+            },
+            "desktop": {
+              "type": "boolean",
+              "description": "acde:desktop (desktop events and pinned panels; a shell module, for system apps only)"
+            },
+            "setDefault": {
+              "type": "boolean",
+              "description": "acde:setDefault (set default apps; a shell module, for system apps only)"
+            },
+            "camera": {
+              "type": "boolean",
+              "description": "The camera of navigator.mediaDevices.getUserMedia (the system must agree too: macOS privacy settings)"
+            },
+            "microphone": {
+              "type": "boolean",
+              "description": "The microphone of navigator.mediaDevices.getUserMedia (the system must agree too: macOS privacy settings)"
+            }
+          },
+          "additionalProperties": true,
+          "description": "acde capabilities; other keys are names of desktop services"
+        },
+        "optional": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The entries of capabilities the app can do without (each also listed in capabilities); the rest are required, and without them the app is not listed and does not start"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The desktop services used (imported as acde:<name>); system module names are not allowed"
+        },
+        "heapMb": {
+          "type": "number",
+          "minimum": 32
+        },
+        "size": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "The window page's initial size [width, height] in logical pixels, without the frame; default 800x600. In single-app mode (acdev runtime app) it is the initial size of the host window's content area (within the work area)"
+        },
+        "multiple": {
+          "type": "boolean"
+        },
+        "frame": {
+          "type": "boolean"
+        },
+        "window": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "material": {
+              "description": "The window background material drawn under the page: glass (liquid glass; role regular or clear), blur (background blur with a tint, no lens or highlight) or none. Names are open ([a-z0-9._-], at most 64 bytes) for effects added later; an unknown name draws as none with one warning. The page background must be transparent for it to show. Same as acde:window setMaterial at start",
+              "anyOf": [
+                { "type": "string", "pattern": "^[a-z0-9._-]{1,64}$" },
+                {
+                  "type": "object",
+                  "required": ["name"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": { "type": "string", "pattern": "^[a-z0-9._-]{1,64}$" },
+                    "role": { "enum": ["regular", "clear"], "description": "glass only" },
+                    "group": { "type": "string", "pattern": "^[a-z0-9._-]{1,64}$", "description": "glass only: a session-wide group name; windows (of any app) with the same group merge their window glass; page elements never merge across windows" },
+                    "spacing": { "type": "number", "minimum": 0, "maximum": 256, "description": "merge distance in logical pixels, default 10" },
+                    "overrides": { "type": "object", "additionalProperties": { "type": "string" }, "description": "parameter name (as --acde-glass-* without the prefix: blur, tint, outline, ...) to its CSS text" },
+                    "region": { "enum": ["window", "titlebar"], "description": "the whole window (default) or the title bar only" }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "mimeTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "schemes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9+.-]*$"
+          }
+        },
+        "requests": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          }
+        },
+        "backend": {
+          "oneOf": [
+            {
+              "const": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "entry": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 65535
+                }
+              },
+              "additionalProperties": false
+            }
+          ],
+          "description": "false: no backend; by default server.ts and the like are looked for"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "description": "The package name; defaults to package.json's name"
+        },
+        "version": {
+          "type": "string"
+        },
+        "apiLevel": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The contract level (API_LEVEL); when left out, acdev build writes the current level"
+        },
+        "public": {
+          "type": "string",
+          "description": "The directory of static files copied as they are; defaults to public"
+        },
+        "type": {
+          "const": "desktop"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "entry": {
+          "type": "string",
+          "description": "The desktop page; defaults to index.html"
+        },
+        "heapMb": {
+          "type": "number",
+          "minimum": 32
+        },
+        "services": {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "The service's module file"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "module": {
+                    "type": "string",
+                    "description": "The service's module file"
+                  },
+                  "modules": {
+                    "type": "array",
+                    "items": {
+                      "enum": [
+                        "windows",
+                        "packages",
+                        "session",
+                        "desktops",
+                        "inspect",
+                        "desktop",
+                        "setDefault",
+                        "permissions",
+                        "voice"
+                      ]
+                    },
+                    "description": "The shell modules this service may use, reached in the service with ctx.import('acde:<name>'); acdev build writes them into the desktop manifest as {name, modules}"
+                  }
+                },
+                "required": [
+                  "module"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "description": "Service name → module file, or {module, modules} (also listing the shell modules it may use)"
+        },
+        "apps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "label": {
+                "type": "string"
+              },
+              "icon": {
+                "$ref": "#/$defs/icon"
+              },
+              "entry": {
+                "type": "string",
+                "description": "An HTML page (default index.html) or a module whose default export is a WindowApp"
+              },
+              "capabilities": {
+                "type": "object",
+                "properties": {
+                  "fs": {
+                    "oneOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "roots": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "roots"
+                        ]
+                      }
+                    ]
+                  },
+                  "terminal": {
+                    "type": "boolean"
+                  },
+                  "office": {
+                    "type": "boolean"
+                  },
+                  "launch": {
+                    "type": "boolean"
+                  },
+                  "slots": {
+                    "type": "boolean"
+                  },
+                  "open": {
+                    "oneOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "openFiles": {
+                    "type": "boolean"
+                  },
+                  "session": {
+                    "type": "boolean",
+                    "description": "acde:session (sign out, language …; a shell module, for system apps only)"
+                  },
+                  "desktops": {
+                    "type": "boolean",
+                    "description": "acde:desktops (list / switch desktops; a shell module, for system apps only)"
+                  },
+                  "windows": {
+                    "type": "boolean",
+                    "description": "acde:windows (every window: list, focus, hide, animate; a shell module, for system apps only)"
+                  },
+                  "packages": {
+                    "type": "boolean",
+                    "description": "acde:packages (refresh and install packages, list and run native programs; a shell module, for system apps only)"
+                  },
+                  "inspect": {
+                    "type": "boolean",
+                    "description": "acde:inspect (see and operate the desktop; a shell module, for system apps only)"
+                  },
+                  "desktop": {
+                    "type": "boolean",
+                    "description": "acde:desktop (desktop events and pinned panels; a shell module, for system apps only)"
+                  },
+                  "setDefault": {
+                    "type": "boolean",
+                    "description": "acde:setDefault (set default apps; a shell module, for system apps only)"
+                  },
+                  "camera": {
+                    "type": "boolean",
+                    "description": "The camera of navigator.mediaDevices.getUserMedia (the system must agree too: macOS privacy settings)"
+                  },
+                  "microphone": {
+                    "type": "boolean",
+                    "description": "The microphone of navigator.mediaDevices.getUserMedia (the system must agree too: macOS privacy settings)"
+                  }
+                },
+                "additionalProperties": true,
+                "description": "acde capabilities; other keys are names of desktop services"
+              },
+              "optional": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The entries of capabilities the app can do without (each also listed in capabilities); the rest are required, and without them the app is not listed and does not start"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The desktop services used (imported as acde:<name>); system module names are not allowed"
+              },
+              "heapMb": {
+                "type": "number",
+                "minimum": 32
+              },
+              "size": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "The window page's initial size [width, height] in logical pixels, without the frame; default 800x600. In single-app mode (acdev runtime app) it is the initial size of the host window's content area (within the work area)"
+              },
+              "multiple": {
+                "type": "boolean"
+              },
+              "frame": {
+                "type": "boolean"
+              },
+              "window": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "material": {
+                    "description": "The window background material drawn under the page: glass (liquid glass; role regular or clear), blur (background blur with a tint, no lens or highlight) or none. Names are open ([a-z0-9._-], at most 64 bytes) for effects added later; an unknown name draws as none with one warning. The page background must be transparent for it to show. Same as acde:window setMaterial at start",
+                    "anyOf": [
+                      { "type": "string", "pattern": "^[a-z0-9._-]{1,64}$" },
+                      {
+                        "type": "object",
+                        "required": ["name"],
+                        "additionalProperties": false,
+                        "properties": {
+                          "name": { "type": "string", "pattern": "^[a-z0-9._-]{1,64}$" },
+                          "role": { "enum": ["regular", "clear"], "description": "glass only" },
+                          "group": { "type": "string", "pattern": "^[a-z0-9._-]{1,64}$", "description": "glass only: a session-wide group name; windows (of any app) with the same group merge their window glass; page elements never merge across windows" },
+                          "spacing": { "type": "number", "minimum": 0, "maximum": 256, "description": "merge distance in logical pixels, default 10" },
+                          "overrides": { "type": "object", "additionalProperties": { "type": "string" }, "description": "parameter name (as --acde-glass-* without the prefix: blur, tint, outline, ...) to its CSS text" },
+                          "region": { "enum": ["window", "titlebar"], "description": "the whole window (default) or the title bar only" }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "mimeTypes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "schemes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9+.-]*$"
+                }
+              },
+              "requests": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9-]*$"
+                }
+              },
+              "backend": {
+                "oneOf": [
+                  {
+                    "const": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "entry": {
+                        "type": "string"
+                      },
+                      "port": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ],
+                "description": "false: no backend; by default server.ts and the like are looked for"
+              }
+            },
+            "required": [
+              "id",
+              "entry"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "$defs": {
+    "icon": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Icon: a Dopame icon name (one of IconName in @acde/api: files, browser, editor, office, term, projects, dash, team, dopa, settings, store, app, timer, cards, list, chart, calc, music, video, photo, paint, game, chat, mail, calendar, code, book, map, weather), or an image in the project (.svg / .png, relative to the project directory, copied into the package by acdev build); acdev check warns about other values",
+      "examples": [
+        "files",
+        "browser",
+        "editor",
+        "office",
+        "term",
+        "projects",
+        "dash",
+        "team",
+        "dopa",
+        "settings",
+        "store",
+        "app",
+        "timer",
+        "cards",
+        "list",
+        "chart",
+        "calc",
+        "music",
+        "video",
+        "photo",
+        "paint",
+        "game",
+        "chat",
+        "mail",
+        "calendar",
+        "code",
+        "book",
+        "map",
+        "weather",
+        "icon.svg"
+      ]
+    }
+  }
+}

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light dark" />
+    <title>My App</title>
+    <style>
+      :root { color-scheme: light dark }
+      body { margin: 0; padding: 32px; font: 15px/1.5 system-ui, sans-serif; color: #1f1d26; background: #f6f5fa }
+      h1 { margin: 0 0 8px; font-size: 22px }
+      @media (prefers-color-scheme: dark) {
+        body { color: #e8e6f0; background: #1f1d26 }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>My App</h1>
+    <p data-i18n="intro"></p>
+    <p id="status"></p>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
